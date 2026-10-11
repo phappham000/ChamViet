@@ -344,8 +344,8 @@ body .list-box.result-list {
     overscroll-behavior: contain;
 
     display: grid;
-    column-gap: 16px;
-    row-gap: 22px;
+    column-gap: 25px;
+    row-gap: 25px;
     align-content: start;
 
     margin-top: 0;

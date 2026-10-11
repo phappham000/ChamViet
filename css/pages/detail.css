@@ -337,8 +337,13 @@
 }
 
 .slot span {
-    font-weight: 400;
+    font-weight: 100;
     color: rgba(243, 234, 210, 0.8);
+}
+
+.slot small {
+    margin-left: 10px;
+    font-weight: 100;
 }
 
 .slot:hover:not(:disabled) {
@@ -777,7 +782,6 @@ body .list-box .box-item .image-cell img {
 
 body .list-box .box-item .image-cell .sub-content-cell {
     width: 95%;
-    height: 180px;
 
     border-radius: 10px;
     border: 1px solid rgba(255, 255, 255, 0.315);
@@ -998,10 +1002,6 @@ body .list-box .box-item .rating i {
     .service-list,
     .policy-list {
         grid-template-columns: minmax(0, 1fr);
-    }
-
-    .info-table li {
-        grid-template-columns: 28px minmax(0, 1fr);
     }
 
     .info-table .label {

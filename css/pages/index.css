@@ -297,7 +297,7 @@ body .list-box {
 
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    column-gap: 10px;
+    column-gap: 30px !important;
     row-gap: 40px;
 
     padding: 0 150px;
