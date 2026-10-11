@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tìm kiếm trải nghiệm - ChamViet</title>
+
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/pages/search.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body data-page="search">
+    <div id="site-header"></div>
+
+    <main class="search-page">
+
+        <section class="search-hero">
+            <img src="assets/banner2.jpg" alt="">
+            <div class="search-hero-inner">
+                <div class="search-hero-text">
+                    <h1>Tìm kiếm trải nghiệm</h1>
+                    <p>Khám phá những hoạt động thú vị, gần gũi và đậm chất địa phương</p>
+                </div>
+                <form class="hero-search" id="hero-search" role="search">
+                    <input type="search" id="keyword" placeholder="Bạn muốn trải nghiệm gì?" autocomplete="off">
+                    <button type="submit" aria-label="Tìm kiếm">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <div class="search-toolbar">
+            <button class="filter-toggle is-open" id="filter-toggle" type="button" aria-expanded="true">
+                <i class="fa-solid fa-filter"></i>
+                <span>Lọc theo</span>
+                <i class="fa-solid fa-caret-right caret"></i>
+            </button>
+            <div class="chip-row">
+                <button class="chip" type="button" data-target="group-type">Loại trải nghiệm</button>
+                <button class="chip" type="button" data-target="group-location">Địa điểm</button>
+                <button class="chip" type="button" data-target="group-price">Giá</button>
+                <button class="chip" type="button" data-target="group-duration">Thời lượng</button>
+                <button class="chip" type="button" data-target="group-date">Ngày</button>
+                <button class="chip" type="button" data-target="group-guests">Số người</button>
+                <button class="chip" type="button" data-target="group-available">Còn chỗ</button>
+            </div>
+        </div>
+
+        <div class="search-layout" id="search-layout">
+
+            <aside class="filter-panel" id="filter-panel">
+                <div class="filter-panel-head">
+                    <span>Bộ lọc</span>
+                    <button type="button" class="clear-btn" id="clear-filters" style="text-decoration: none;">Xóa bộ lọc</button>
+                </div>
+
+                <div class="filter-group" id="group-type">
+                    <h3 class="filter-title">Loại trải nghiệm</h3>
+                    <label class="filter-option"><input type="checkbox" name="type" value="di-san-lang-nghe"><span>Di sản làng nghề</span></label>
+                    <label class="filter-option"><input type="checkbox" name="type" value="workshop"><span>Workshop thủ công</span></label>
+                    <label class="filter-option"><input type="checkbox" name="type" value="nong-nghiep"><span>Nông nghiệp &amp; chữa lành</span></label>
+                    <label class="filter-option"><input type="checkbox" name="type" value="tuoi-tho"><span>Vé tuổi thơ 8x 9x</span></label>
+                    <label class="filter-option"><input type="checkbox" name="type" value="am-thuc"><span>Ẩm thực</span></label>
+                    <label class="filter-option"><input type="checkbox" name="type" value="nep-song"><span>Nếp sống bản địa</span></label>
+                </div>
+
+                <div class="filter-group" id="group-location">
+                    <h3 class="filter-title">Địa điểm</h3>
+                    <label class="filter-option"><input type="checkbox" name="location" value="Hà Nội"><span>Hà Nội</span></label>
+                    <label class="filter-option"><input type="checkbox" name="location" value="Ninh Bình"><span>Ninh Bình</span></label>
+                    <label class="filter-option"><input type="checkbox" name="location" value="Hòa Bình"><span>Hòa Bình</span></label>
+                    <label class="filter-option"><input type="checkbox" name="location" value="other"><span>Khác</span></label>
+                </div>
+
+                <div class="filter-group" id="group-price">
+                    <h3 class="filter-title">Giá</h3>
+                    <label class="filter-option"><input type="checkbox" name="price" value="low"><span>Dưới 200.000đ</span></label>
+                    <label class="filter-option"><input type="checkbox" name="price" value="mid"><span>Từ 200.000 - 400.000đ</span></label>
+                    <label class="filter-option"><input type="checkbox" name="price" value="high"><span>Trên 400.000đ</span></label>
+                </div>
+
+                <div class="filter-group" id="group-duration">
+                    <h3 class="filter-title">Thời lượng</h3>
+                    <label class="filter-option"><input type="checkbox" name="duration" value="short"><span>Dưới 4 tiếng</span></label>
+                    <label class="filter-option"><input type="checkbox" name="duration" value="medium"><span>Từ 4 - 8 tiếng</span></label>
+                    <label class="filter-option"><input type="checkbox" name="duration" value="long"><span>Trên 8 tiếng</span></label>
+                </div>
+
+                <div class="filter-group" id="group-date">
+                    <h3 class="filter-title">Ngày</h3>
+                    <input class="filter-input" type="date" id="date-input" aria-label="Chọn ngày">
+                </div>
+
+                <div class="filter-group" id="group-guests">
+                    <h3 class="filter-title">Số người</h3>
+                    <input class="filter-input" type="number" id="guests-input" min="1" max="50" placeholder="Nhập số người" aria-label="Số người">
+                </div>
+
+                <div class="filter-group" id="group-available">
+                    <h3 class="filter-title">Còn chỗ</h3>
+                    <label class="filter-option"><input type="checkbox" id="only-available"><span>Chỉ hiện trải nghiệm còn chỗ</span></label>
+                </div>
+            </aside>
+
+            <section class="result-col">
+                <div class="result-head">
+                    <p id="result-count">0 kết quả</p>
+                    <div class="sort">
+                        <label for="sort-select">Sắp xếp theo:</label>
+                        <select id="sort-select">
+                            <option value="popular">Phổ biến nhất</option>
+                            <option value="rating">Đánh giá cao nhất</option>
+                            <option value="price-asc">Giá thấp đến cao</option>
+                            <option value="price-desc">Giá cao đến thấp</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="list-box result-list" id="result-list"></div>
+            </section>
+
+            <aside class="map-panel">
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d476855.7336683823!2d105.32309265442592!3d20.97517624582615!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3135ab9bd9861ca1%3A0xe7887f7b72ca17a9!2zSMOgIE7hu5lpLCBWaeG7h3QgTmFt!5e0!3m2!1svi!2s!4v1791710447982!5m2!1svi!2s" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+            </aside>
+        </div>
+    </main>
+
+    <script src="js/data.js"></script>
+    <script src="js/search.js"></script>
+    <script src="js/components.js"></script>
+</body>
+</html>

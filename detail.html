@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chi tiết trải nghiệm - ChamViet</title>
+
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/pages/card.css">
+    <link rel="stylesheet" href="css/pages/detail.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body data-page="search">
+    <div id="site-header"></div>
+
+    <main class="detail-page" id="detail-page">
+
+        <!-- Ảnh lớn đầu trang -->
+        <section class="detail-hero">
+            <img id="hero-img" src="assets/logo.png" alt="">
+            <a href="search.html" class="back-link" id="back-link">
+                <i class="fa-solid fa-arrow-left"></i> Quay lại
+            </a>
+        </section>
+
+        <div class="detail-container">
+
+            <!-- Thông tin (trái) + thẻ đặt lịch (phải) -->
+            <div class="detail-main">
+
+                <article class="detail-info">
+                    <h1 id="exp-title"></h1>
+                    <div class="exp-meta" id="exp-meta"></div>
+                    <div class="exp-rating" id="exp-rating"></div>
+
+                    <h2>Giới thiệu</h2>
+                    <p class="exp-intro" id="exp-intro"></p>
+                    <p class="exp-sub">Điểm nổi bật của trải nghiệm:</p>
+                    <ul class="exp-highlights" id="exp-highlights"></ul>
+
+                    <ul class="info-table" id="info-table"></ul>
+
+                    <h2>Tiêu chuẩn dịch vụ</h2>
+                    <ul class="service-list" id="service-list"></ul>
+
+                    <h2>Chính sách hủy</h2>
+                    <ul class="policy-list">
+                        <li>Hủy trước 3 ngày: hoàn tiền 100%</li>
+                        <li>Hủy trước 2 ngày: hoàn tiền 50%</li>
+                        <li>Hủy trước 1 ngày: hoàn tiền 25%</li>
+                        <li>Hủy trong ngày: không hoàn tiền</li>
+                    </ul>
+                </article>
+
+                <aside class="booking-card" id="booking">
+                    <div class="price-row">
+                        <span class="price-big" id="price-big">0đ</span>
+                        <span class="price-unit">/ người</span>
+                    </div>
+
+                    <p class="field-label" for="date-input">Chọn ngày</p>
+                    <input class="date-input" type="date" id="date-input">
+                    <div class="date-suggest" id="date-suggest"></div>
+
+                    <p class="field-label">Khung giờ</p>
+                    <div class="slot-list" id="slot-list"></div>
+
+                    <p class="field-label">Số lượng</p>
+                    <p class="qty-label">Người lớn (trên 12 tuổi)</p>
+                    <div class="qty">
+                        <button type="button" id="qty-minus" aria-label="Giảm số lượng">−</button>
+                        <span class="qty-value" id="qty-value">1</span>
+                        <button type="button" id="qty-plus" aria-label="Tăng số lượng">+</button>
+                    </div>
+                    <p class="qty-hint" id="qty-hint"></p>
+
+                    <button type="button" class="book-btn" id="book-btn">Đặt lịch ngay</button>
+                    <p class="booking-msg" id="booking-msg" role="alert"></p>
+
+                    <div class="total">
+                        <span>Tổng thanh toán:</span>
+                        <strong id="total-value">0đ</strong>
+                    </div>
+                </aside>
+            </div>
+
+            <!-- Đánh giá -->
+            <section class="detail-section" id="reviews">
+                <div class="section-head">
+                    <h2>Đánh giá từ khách hàng</h2>
+                    <p class="score" id="reviews-score"></p>
+                </div>
+                <div class="reviews-grid" id="reviews-grid"></div>
+                <div class="reviews-more">
+                    <button type="button" class="outline-btn" id="reviews-toggle">Xem tất cả đánh giá</button>
+                </div>
+            </section>
+
+            <!-- Bản đồ -->
+            <section class="detail-section" id="location">
+                <h2>Địa điểm hẹn gặp</h2>
+                <p class="section-sub" id="location-text"></p>
+                <div class="map-frame">
+                    <iframe id="map-frame" title="Bản đồ địa điểm hẹn gặp" loading="lazy"
+                            referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
+                </div>
+            </section>
+
+            <!-- Trải nghiệm liên quan: dùng lại class list-box để nhận CSS card -->
+            <section class="detail-section" id="related">
+                <h2>Có thể bạn cũng thích</h2>
+                <div class="list-box related-list" id="related-list"></div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Thanh đặt lịch cố định dưới đáy màn hình (chỉ hiện trên điện thoại / tablet) -->
+    <div class="mobile-cta">
+        <div>
+            <small>Giá từ</small>
+            <strong id="cta-price">0đ</strong>
+        </div>
+        <button type="button" id="cta-btn">Chọn lịch</button>
+    </div>
+
+    <!-- <div id="site-footer"></div> -->
+
+    <script src="js/data.js"></script>
+    <script src="js/detail.js"></script>
+    <script src="js/components.js"></script>
+</body>
+</html>

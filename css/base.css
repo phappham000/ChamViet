@@ -1,0 +1,6 @@
+@import url('https://fonts.googleapis.com/css2?family=PT+Serif:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+:root {
+    --background-color: rgb(255, 255, 255);
+    --font-color-dark: rgb(0, 0, 0);
+    --font-color-light: rgb(255, 255, 255);
+}
