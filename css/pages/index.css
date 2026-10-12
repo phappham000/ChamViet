@@ -16,6 +16,17 @@ body .body-content .body-content-main {
     padding: 0 30px;
 }
 
+body .body-content .body-content-main:after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg,
+        rgba(15, 25, 15, 0.85) 0%,
+        rgba(15, 25, 15, 0.55) 45%,
+        rgba(15, 25, 15, 0) 80%);
+    z-index: -1;
+}
+
 body .body-content .body-content-main .banners {
     position: absolute;
     top: 0;
@@ -48,10 +59,19 @@ body .body-content .body-content-main .body-content-main-left {
     transform: translateZ(0);
 }
 
+body .body-content .body-content-main .body-content-main-left .slogan {
+    font-size: 50px;
+    font-weight: bold;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin-bottom: 20px;
+    text-shadow: 1px 2px 10px black;
+}
+
 body .body-content .body-content-main .body-content-main-left .title {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    font-size: 40px;
+    font-size: 25px;
     font-weight: bold;
+    text-shadow: 1px 2px 10px black;
 }
 
 body .body-content .body-content-main .body-content-main-left .sub-title {
@@ -59,6 +79,7 @@ body .body-content .body-content-main .body-content-main-left .sub-title {
     font-family: "PT Serif", serif;
     font-size: 18px;
     font-style: italic;
+    text-shadow: 1px 2px 10px black;
 }
 
 body .body-content .body-content-main .body-content-main-right {
@@ -890,7 +911,7 @@ body .comment-title,
     }
 
     body .body-content .body-content-main .body-content-main-left .title {
-        font-size: 30px;
+        display: none;
     }
 
     body .body-content .body-content-main .body-content-main-left .sub-title {
@@ -951,6 +972,10 @@ body .comment-title,
     body .body-content .body-content-main {
         padding: 28px 16px;
         gap: 18px;
+    }
+
+    body .body-content .body-content-main .body-content-main-left .slogan {
+        font-size: 35px;
     }
 
     body .body-content .body-content-main .body-content-main-left .title {
