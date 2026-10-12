@@ -473,7 +473,8 @@ body .list-box .box-item {
     color: #f3ead2;
     box-shadow: 0 6px 20px rgba(8, 40, 22, 0.35);
 
-    transition: .3s ease-in-out;
+    will-change: transform, opacity;
+    transform: translateZ(0);
 }
 
 body .list-box .box-item:hover {

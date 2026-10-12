@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body data-page="index">
+    <div id="box-ai"></div>
     <div id="site-header"></div>
 
     <main class="body-content">
@@ -127,7 +128,7 @@
 
             <div class="stories-slider">
                 <article class="story active">
-                    <img src="assets/banner2.jpg" alt="Nghệ nhân đang nặn gốm Bát Tràng">
+                    <img src="assets/banner3.jpg" alt="Nghệ nhân đang nặn gốm Bát Tràng">
                     <div class="story-content">
                         <h3>#40 năm giữ lửa men gốm Bát Tràng</h3>
                         <p>Tôi muốn mỗi sản phẩm là một câu chuyện<br>Chạm đến bạn...</p>
@@ -136,7 +137,7 @@
                 </article>
 
                 <article class="story">
-                    <img src="assets/images8.jpg" alt="Nghệ nhân nhuộm chàm người H'Mông">
+                    <img src="assets/images.jpeg" alt="Nghệ nhân nhuộm chàm người H'Mông">
                     <div class="story-content">
                         <h3>#Sắc chàm trên áo thổ cẩm vùng cao</h3>
                         <p>Mỗi nếp vải là một lời kể<br>của núi rừng Lào Cai...</p>
@@ -145,7 +146,7 @@
                 </article>
 
                 <article class="story">
-                    <img src="assets/banner3.jpg" alt="Làm đèn ông sao Trung thu">
+                    <img src="assets/images3.jpg" alt="Làm đèn ông sao Trung thu">
                     <div class="story-content">
                         <h3>#Thắp sáng ký ức bằng chiếc đèn ông sao</h3>
                         <p>Trung thu xưa vẫn còn đó<br>trong đôi bàn tay người thợ...</p>
@@ -263,6 +264,49 @@
         }).to('.img', {
             xPercent: 0
         });
+
+        gsap.from('.nocti', {
+            y: -15,
+            opacity: 0,
+            duration: 0.5,
+            delay: 2,
+            repeatDelay: 2,
+            repeat: -1,
+            yoyo: true
+        });
+
+        gsap.from('.body-content-main-left', {
+            x: -50,
+            opacity: 0,
+            duration: 1
+        })
+
+        gsap.from('.search-bar', {
+            y: -30,
+            opacity: 0,
+            duration: 2
+        });
+
+        gsap.from('.menu-item-par', {
+            y: 30,
+            opacity: 0,
+            duration: 0.5,
+            stagger: 0.1
+        });
+
+        gsap.from('.card-item', {
+            y: 30,
+            opacity: 0,
+            duration: 0.5,
+            stagger: 0.1
+        });
+
+        gsap.from('.box-item', {
+            y: 30,
+            opacity: 0,
+            duration: 0.5,
+            stagger: 0.1
+        });
     </script>
     <script>
         const stories = document.querySelectorAll(".story");
@@ -284,21 +328,19 @@
         }
 
         function startAuto() {
-            timer = setInterval(nextStory, 4000);   // 5 giây đổi một lần
+            timer = setInterval(nextStory, 4000);
         }
 
         function stopAuto() {
             clearInterval(timer);
         }
 
-        // Bấm chấm tròn để chọn câu chuyện
         dots.forEach(function (dot, index) {
             dot.addEventListener("click", function () {
                 showStory(index);
             });
         });
 
-        // Rê chuột vào thì dừng, rời ra thì chạy tiếp
         slider.addEventListener("mouseenter", stopAuto);
         slider.addEventListener("mouseleave", startAuto);
 

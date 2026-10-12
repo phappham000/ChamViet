@@ -86,8 +86,23 @@ const footerHTML = `
 </footer>
 `;
 
+const chatBoxAI = `
+<div class="box-ai">
+    <div class="ai">
+        <i class="fa-solid fa-paper-plane"></i>
+        <div class="nocti">
+            <p>Bạn có gặp khó khăn gì không?</p>
+            <p>Tôi sẵn sàng giúp bạn!</p>
+        </div>
+    </div>
+</div>
+`;
+
 headerEl = document.getElementById("site-header");
 footerEl = document.getElementById("site-footer");
+chatEL = document.getElementById("box-ai");
+
+chatEL.innerHTML = chatBoxAI;
 
 if (headerEl) headerEl.innerHTML = headerHTML;
 if (footerEl) footerEl.innerHTML = footerHTML;
