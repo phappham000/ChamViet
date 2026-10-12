@@ -20,6 +20,11 @@ body::-webkit-scrollbar {
     display: none;
 }
 
+.no-scroll {
+    overflow: hidden !important;
+    height: 100dvh !important;
+}
+
 body .site-header {
     position: relative;
     z-index: 1;
@@ -253,5 +258,9 @@ body .site-footer .footer-item .title {
 
     body .site-header .site-header-right .nav button:active {
         scale: 1.6;
+    }
+
+    .site-footer .footer-item {
+        scale: .8;
     }
 }

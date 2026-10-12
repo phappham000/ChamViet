@@ -1,11 +1,3 @@
-// =========================================================
-// TRANG CHI TIẾT  (đặt file này ở js/detail.js)
-// Nhúng data.js TRƯỚC file này. Mở bằng detail.html?id=5
-//
-// Các trường TÙY CHỌN trong data.js (không có thì dùng mặc định):
-//   intro, highlights[], address, language, maxGuests, schedule,
-//   included[], slots[{time, spots}]
-// =========================================================
 (function () {
     "use strict";
 
@@ -14,27 +6,26 @@
         return;
     }
 
-    // ---------- Cấu hình ----------
     const LIKED_KEY = "chamviet_liked";
-    const BOOKED_KEY = "chamviet_booked";     // checkout.js sẽ ghi: { "id|yyyy-mm-dd|slot": số người }
-    const BOOKING_KEY = "chamviet_booking";   // đơn đang đặt, checkout.html đọc khóa này
+    const BOOKED_KEY = "chamviet_booked";
+    const BOOKING_KEY = "chamviet_booking";
     const FALLBACK_IMAGE = "assets/logo.png";
     const AVATAR = "assets/avatar.webp";
     const REVIEWS_COLLAPSED = 2;
 
     const SAMPLE_REVIEWS = [
         { name: "Nguyễn Minh Anh", time: "2 tuần trước", score: 5, photos: ["assets/images1.jpg", "assets/images2.jpg"],
-          text: "Trải nghiệm rất tuyệt vời tại {place}. Nghệ nhân nhiệt tình, hướng dẫn từng bước, mình làm ra được sản phẩm của riêng mình." },
+            text: "Trải nghiệm rất tuyệt vời tại {place}. Nghệ nhân nhiệt tình, hướng dẫn từng bước, mình làm ra được sản phẩm của riêng mình." },
         { name: "Trần Quốc Bảo", time: "1 tháng trước", score: 5, photos: ["assets/images3.jpg"],
-          text: "Không gian thoáng đãng, con người thân thiện. Cả nhà mình đều thích, chắc chắn sẽ quay lại {place} lần nữa." },
+            text: "Không gian thoáng đãng, con người thân thiện. Cả nhà mình đều thích, chắc chắn sẽ quay lại {place} lần nữa." },
         { name: "Lê Thu Hà", time: "1 tháng trước", score: 4, photos: [],
-          text: "Hoạt động ý nghĩa, phù hợp đi cùng bạn bè và gia đình. Nên đến sớm một chút để có nhiều thời gian trải nghiệm hơn." },
+            text: "Hoạt động ý nghĩa, phù hợp đi cùng bạn bè và gia đình. Nên đến sớm một chút để có nhiều thời gian trải nghiệm hơn." },
         { name: "Phạm Đức Long", time: "2 tháng trước", score: 5, photos: ["assets/images5.jpg", "assets/images6.jpeg"],
-          text: "Mình rất ấn tượng với cách mọi người giữ gìn nghề truyền thống ở {place}. Đáng đồng tiền bỏ ra." },
+            text: "Mình rất ấn tượng với cách mọi người giữ gìn nghề truyền thống ở {place}. Đáng đồng tiền bỏ ra." },
         { name: "Vũ Hải Yến", time: "3 tháng trước", score: 5, photos: [],
-          text: "Lịch trình rõ ràng, nhân viên hỗ trợ nhiệt tình. Các bé nhà mình chơi rất vui và học được nhiều điều." },
+            text: "Lịch trình rõ ràng, nhân viên hỗ trợ nhiệt tình. Các bé nhà mình chơi rất vui và học được nhiều điều." },
         { name: "Đỗ Khánh Linh", time: "4 tháng trước", score: 4, photos: ["assets/images7.jpg"],
-          text: "Trải nghiệm đáng nhớ, cảnh đẹp và đồ ăn ngon. Mong có thêm nhiều khung giờ vào cuối tuần." }
+            text: "Trải nghiệm đáng nhớ, cảnh đẹp và đồ ăn ngon. Mong có thêm nhiều khung giờ vào cuối tuần." }
     ];
 
     const DEFAULT_SERVICES = [
@@ -45,7 +36,6 @@
         "Mang sản phẩm về làm quà"
     ];
 
-    // ---------- Tiện ích ----------
     function $(id) { return document.getElementById(id); }
 
     function esc(value) {
@@ -75,7 +65,6 @@
         return d;
     }
 
-    // Đọc chuỗi ngày trong data.js: "dd/mm/yyyy", "dd/mm" hoặc "yyyy-mm-dd" -> ISO (hoặc null)
     function parseDateText(text) {
         const s = String(text).trim();
         let m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
@@ -89,7 +78,6 @@
         return toISO(d);
     }
 
-    // ---------- Tìm trải nghiệm theo ?id= ----------
     const params = new URLSearchParams(window.location.search);
     const idParam = params.get("id");
     const raw = idParam === null
@@ -133,7 +121,6 @@
     const exp = withDefaults(raw);
     const liked = new Set(readJSON(LIKED_KEY, []));
 
-    // ---------- Phần đầu: ảnh, tiêu đề, thông tin ----------
     document.title = exp.name + " - ChamViet";
 
     const heroImg = $("hero-img");
@@ -148,7 +135,7 @@
                 history.back();
             });
         }
-    } catch (e) { /* bỏ qua, dùng href mặc định */ }
+    } catch (e) {}
 
     $("exp-title").textContent = exp.name;
 
@@ -195,7 +182,6 @@
         return '<li><i class="fa-solid fa-check"></i>' + esc(t) + "</li>";
     }).join("");
 
-    // ---------- Thẻ đặt lịch ----------
     const dateInput = $("date-input");
     const slotListEl = $("slot-list");
     const qtyValueEl = $("qty-value");
@@ -216,7 +202,6 @@
 
     const state = { date: "", slot: -1, qty: 2 };
 
-    // Các ngày gợi ý lấy từ data.js (chỉ lấy ngày từ hôm nay trở đi)
     const suggestDates = [];
     (exp.dates || []).forEach(function (t) {
         const iso = parseDateText(t);
@@ -289,7 +274,7 @@
             return;
         }
         state.date = dateInput.value;
-        state.slot = -1;        // đổi ngày thì phải chọn lại khung giờ
+        state.slot = -1;
         showMsg("");
         renderBooking();
     });
@@ -357,7 +342,6 @@
 
     renderBooking();
 
-    // ---------- Đánh giá ----------
     const reviews = SAMPLE_REVIEWS.map(function (r) {
         return Object.assign({}, r, { text: r.text.replace(/\{place\}/g, exp.location) });
     });
@@ -401,11 +385,9 @@
     });
     renderReviews();
 
-    // ---------- Bản đồ ----------
     $("location-text").textContent = exp.address;
     $("map-frame").src = "https://www.google.com/maps?q=" + encodeURIComponent(exp.address) + "&output=embed&hl=vi";
 
-    // ---------- Trải nghiệm liên quan (dùng lại markup card) ----------
     function byRating(a, b) { return (b.rating || 0) - (a.rating || 0); }
 
     function pickRelated() {

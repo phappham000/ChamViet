@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đơn của tôi - ChamViet</title>
+
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/pages/dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body data-page="dashboard">
+    <div id="site-header"></div>
+
+    <main class="db-page">
+        <div class="db-title">
+            <div>
+                <h1>Đơn của tôi</h1>
+                <p>Theo dõi các trải nghiệm bạn đã đặt tại ChamViet</p>
+            </div>
+            <div class="db-tools">
+                <button type="button" class="db-btn ghost" id="seed-btn"><i class="fa-solid fa-wand-magic-sparkles"></i> Thêm đơn mẫu</button>
+                <button type="button" class="db-btn ghost danger" id="reset-btn"><i class="fa-regular fa-trash-can"></i> Xóa dữ liệu demo</button>
+            </div>
+        </div>
+
+        <!-- Thống kê -->
+        <section class="db-stats" id="db-stats">
+            <div class="stat"><i class="fa-solid fa-ticket"></i><div><small>Tổng số đơn</small><strong id="st-count">0</strong></div></div>
+            <div class="stat"><i class="fa-regular fa-calendar-check"></i><div><small>Sắp diễn ra</small><strong id="st-upcoming">0</strong></div></div>
+            <div class="stat"><i class="fa-solid fa-wallet"></i><div><small>Tổng chi tiêu</small><strong id="st-spent">0đ</strong></div></div>
+            <div class="stat"><i class="fa-solid fa-coins"></i><div><small>Điểm Chạm</small><strong id="st-points">0</strong></div></div>
+        </section>
+
+        <div class="db-layout">
+            <section class="db-orders">
+                <div class="db-tabs" id="db-tabs" role="tablist">
+                    <button type="button" class="tab active" data-filter="all">Tất cả</button>
+                    <button type="button" class="tab" data-filter="upcoming">Sắp diễn ra</button>
+                    <button type="button" class="tab" data-filter="done">Đã hoàn thành</button>
+                    <button type="button" class="tab" data-filter="cancelled">Đã hủy</button>
+                </div>
+
+                <div class="order-list" id="order-list"></div>
+            </section>
+
+            <aside class="db-side">
+                <div class="side-card">
+                    <h2>Chi tiêu theo loại</h2>
+                    <div id="spend-bars"></div>
+                </div>
+                <div class="side-card">
+                    <h2>Chính sách hủy</h2>
+                    <ul class="policy">
+                        <li>Trước 3 ngày: hoàn 100%</li>
+                        <li>Trước 2 ngày: hoàn 50%</li>
+                        <li>Trước 1 ngày: hoàn 25%</li>
+                        <li>Trong ngày: không hoàn tiền</li>
+                    </ul>
+                </div>
+            </aside>
+        </div>
+    </main>
+
+    <script src="js/data.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script src="js/components.js"></script>
+</body>
+</html>

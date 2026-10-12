@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đặt chỗ - ChamViet</title>
+
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/pages/checkout.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body data-page="checkout">
+    <div id="site-header"></div>
+
+    <main class="ck-page" id="ck-page">
+
+        <ol class="ck-steps" id="ck-steps">
+            <li class="ck-step active" data-step="1"><span class="dot"></span><span class="label"><b>1.</b> Thông Tin</span></li>
+            <li class="ck-step" data-step="2"><span class="dot"></span><span class="label"><b>2.</b> Thanh Toán</span></li>
+            <li class="ck-step" data-step="3"><span class="dot"></span><span class="label"><b>3.</b> Hoàn Tất</span></li>
+        </ol>
+
+        <section class="ck-empty" id="ck-empty" hidden>
+            <i class="fa-regular fa-calendar-xmark"></i>
+            <h1>Chưa có trải nghiệm nào để đặt</h1>
+            <p>Hãy chọn một trải nghiệm và khung giờ trước nhé.</p>
+            <a class="ck-btn" href="search.html">Khám phá trải nghiệm</a>
+        </section>
+
+        <section class="ck-grid" id="panel-1">
+            <aside class="ck-card ck-summary">
+                <h2>Thông tin trải nghiệm</h2>
+                <img id="sum-img" src="assets/logo.png" alt="">
+                <h3 id="sum-name"></h3>
+                <ul class="sum-meta">
+                    <li><i class="fa-regular fa-user"></i><span id="sum-guests"></span></li>
+                    <li><i class="fa-regular fa-calendar"></i><span id="sum-date"></span></li>
+                    <li><i class="fa-regular fa-clock"></i><span id="sum-slot"></span></li>
+                    <li><i class="fa-solid fa-coins"></i><span id="sum-total"></span></li>
+                </ul>
+            </aside>
+
+            <form class="ck-card ck-form" id="info-form" novalidate>
+                <h2>Thông tin người đặt</h2>
+
+                <div class="row two">
+                    <div class="field">
+                        <label for="f-last">Họ *</label>
+                        <input id="f-last" name="last" type="text" autocomplete="family-name">
+                        <small class="err"></small>
+                    </div>
+                    <div class="field">
+                        <label for="f-first">Tên *</label>
+                        <input id="f-first" name="first" type="text" autocomplete="given-name">
+                        <small class="err"></small>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label for="f-country">Quốc gia *</label>
+                    <select id="f-country" name="country">
+                        <option>Việt Nam</option>
+                        <option>Hàn Quốc</option>
+                        <option>Nhật Bản</option>
+                        <option>Singapore</option>
+                        <option>Hoa Kỳ</option>
+                        <option>Pháp</option>
+                        <option>Khác</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label for="f-email">E-mail *</label>
+                    <input id="f-email" name="email" type="email" autocomplete="email">
+                    <small class="err"></small>
+                </div>
+
+                <div class="field">
+                    <label for="f-phone">Số điện thoại *</label>
+                    <div class="phone-row">
+                        <select id="f-code" aria-label="Mã quốc gia">
+                            <option>+84</option><option>+82</option><option>+81</option>
+                            <option>+65</option><option>+1</option><option>+33</option>
+                        </select>
+                        <input id="f-phone" name="phone" type="tel" inputmode="numeric" autocomplete="tel-national">
+                    </div>
+                    <small class="err"></small>
+                </div>
+
+                <div class="ck-actions">
+                    <a class="ck-link" id="back-detail" href="search.html"><i class="fa-solid fa-arrow-left"></i> Quay lại</a>
+                    <button type="submit" class="ck-btn">Tiếp tục thanh toán</button>
+                </div>
+            </form>
+        </section>
+
+        <section class="ck-grid pay" id="panel-2" hidden>
+            <div class="pay-left">
+                <div class="ck-card">
+                    <h2>Phương thức thanh toán</h2>
+                    <ul class="method-list" id="method-list"></ul>
+                </div>
+
+                <div class="ck-card coupon">
+                    <button type="button" class="coupon-toggle" id="coupon-toggle" aria-expanded="false">
+                        <span>Áp dụng mã giảm giá hoặc phiếu ưu đãi</span>
+                        <i class="fa-solid fa-ticket"></i>
+                    </button>
+                    <div class="coupon-body" id="coupon-body" hidden>
+                        <div class="coupon-row">
+                            <input id="coupon-input" type="text" placeholder="Nhập mã (thử CHAMVIET10)" autocomplete="off">
+                            <button type="button" id="coupon-apply">Áp dụng</button>
+                        </div>
+                        <small id="coupon-msg"></small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pay-right">
+                <div class="ck-card pay-panel" id="pay-panel"></div>
+
+                <div class="totals">
+                    <div><span>Tạm tính:</span><strong id="t-sub"></strong></div>
+                    <div id="t-discount-row" hidden><span>Giảm giá:</span><strong id="t-discount"></strong></div>
+                    <div class="big"><span>Tổng tiền:</span><strong id="t-total"></strong></div>
+                    <div><span>Tích điểm Chạm:</span><strong><i class="fa-solid fa-coins"></i> <span id="t-points">0</span></strong></div>
+                </div>
+
+                <button type="button" class="ck-btn wide" id="pay-btn">Thanh toán ngay</button>
+                <button type="button" class="ck-link center" id="back-info"><i class="fa-solid fa-arrow-left"></i> Sửa thông tin người đặt</button>
+            </div>
+        </section>
+
+        <section class="ck-done" id="panel-3" hidden>
+            <div class="ck-card done-card">
+                <div class="done-icon"><i class="fa-solid fa-check"></i></div>
+                <h1>Đặt chỗ thành công!</h1>
+                <p class="done-sub">Cảm ơn bạn. Thông tin xác nhận đã được lưu trong mục "Đơn của tôi".</p>
+
+                <div class="done-code">Mã đặt chỗ <strong id="done-code"></strong></div>
+
+                <ul class="done-list">
+                    <li><span>Trải nghiệm</span><b id="done-name"></b></li>
+                    <li><span>Ngày &amp; giờ</span><b id="done-when"></b></li>
+                    <li><span>Số khách</span><b id="done-guests"></b></li>
+                    <li><span>Người đặt</span><b id="done-who"></b></li>
+                    <li><span>Thanh toán</span><b id="done-method"></b></li>
+                    <li><span>Tổng tiền</span><b id="done-total"></b></li>
+                    <li><span>Điểm Chạm nhận được</span><b id="done-points"></b></li>
+                </ul>
+
+                <div class="ck-actions center">
+                    <a class="ck-link" href="index.html">Về trang chủ</a>
+                    <a class="ck-btn" href="dashboard.html">Xem đơn của tôi</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div class="ck-loading" id="ck-loading" hidden>
+        <div class="spinner"></div>
+        <p>Đang xử lý thanh toán...</p>
+    </div>
+
+    <script src="js/data.js"></script>
+    <script src="js/checkout.js"></script>
+    <script src="js/components.js"></script>
+</body>
+</html>

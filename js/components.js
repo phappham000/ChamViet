@@ -48,8 +48,10 @@ const headerHTML = `
             </div>
         </div>
         <div class="me">
-            <img src="assets/avatar.webp" alt="avatar">
-            <i class="fa-solid fa-bell"></i>
+            <a href="dashboard.html">
+                <img src="assets/avatar.webp" alt="avatar">
+                <i class="fa-solid fa-bell"></i>
+            </a>
         </div>
     </div>
 </header>
@@ -98,8 +100,11 @@ menuIcon.addEventListener("click", (e) => {
 
     if (menu.classList.contains("active")) {
         closeMenu();
+        document.body.classList.remove("no-scroll");
     } else {
         menu.classList.add("active");
+
+        document.body.classList.add("no-scroll");
 
         gsap.fromTo(menu,
             {
@@ -136,6 +141,7 @@ document.addEventListener("click", (e) => {
         !menuIcon.contains(e.target)
     ) {
         closeMenu();
+        document.body.classList.remove("no-scroll");
     }
 });
 

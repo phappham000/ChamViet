@@ -997,7 +997,6 @@ body .list-box .box-item .rating i {
     }
 }
 
-/* Điện thoại */
 @media (max-width: 560px) {
     .service-list,
     .policy-list {
