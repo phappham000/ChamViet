@@ -1,20 +1,25 @@
+// =========================================================
+// TRANG CÁ NHÂN  (đặt ở js/dashboard.js)
+// Đọc dữ liệu do checkout.js / detail.js lưu trong trình duyệt:
+//   chamviet_orders, chamviet_booked, chamviet_points, chamviet_customer,
+//   chamviet_liked; trang này tự lưu thêm chamviet_reviews, chamviet_profile
+// =========================================================
 (function () {
     "use strict";
 
     const ORDERS_KEY = "chamviet_orders";
     const BOOKED_KEY = "chamviet_booked";
     const POINTS_KEY = "chamviet_points";
+    const CUSTOMER_KEY = "chamviet_customer";
+    const LIKED_KEY = "chamviet_liked";
+    const REVIEWS_KEY = "chamviet_reviews";
+    const PROFILE_KEY = "chamviet_profile";
+    const DEFAULT_AVATAR = "assets/avatar.webp";
 
-    const TYPE_LABELS = {
-        "di-san-lang-nghe": "Di sản làng nghề",
-        "workshop": "Workshop thủ công",
-        "nong-nghiep": "Nông nghiệp & chữa lành",
-        "tuoi-tho": "Vé tuổi thơ 8x 9x",
-        "am-thuc": "Ẩm thực",
-        "nep-song": "Nếp sống bản địa"
-    };
-    const STATUS_TEXT = { upcoming: "Sắp diễn ra", done: "Đã hoàn thành", cancelled: "Đã hủy" };
+    const STATUS_TEXT = { upcoming: "Đang tiến hành", done: "Đã hoàn thành", cancelled: "Đã hủy" };
+    const VIEWS = ["overview", "orders", "reviews", "favorites", "profile", "settings"];
 
+    // ---------- Tiện ích ----------
     function $(id) { return document.getElementById(id); }
     function esc(v) {
         return String(v == null ? "" : v).replace(/[&<>"']/g, function (c) {
@@ -43,7 +48,7 @@
         if (o.status === "cancelled") return "cancelled";
         return daysUntil(o.date) < 0 ? "done" : "upcoming";
     }
-    
+    // Chính sách hủy: >=3 ngày 100%, 2 ngày 50%, 1 ngày 25%, trong ngày 0%
     function refundPercent(o) {
         const d = daysUntil(o.date);
         if (d >= 3) return 100;
@@ -55,12 +60,21 @@
         if (typeof experiences === "undefined") return null;
         return experiences.find(function (e) { return String(e.id) === String(id); }) || null;
     }
+    function starsHTML(n) {
+        let s = '<div class="stars" aria-label="' + n + ' sao">';
+        for (let i = 1; i <= 5; i++) s += '<i class="fa-solid fa-star' + (i > n ? " off" : "") + '"></i>';
+        return s + "</div>";
+    }
+    function dateVN(iso) { return new Date(iso).toLocaleDateString("vi-VN"); }
 
+    // ---------- Trạng thái ----------
     let orders = readJSON(ORDERS_KEY, []);
+    let reviews = readJSON(REVIEWS_KEY, []);
     let filter = "all";
     const openCodes = new Set();
 
-    function save() { writeJSON(ORDERS_KEY, orders); }
+    function saveOrders() { writeJSON(ORDERS_KEY, orders); }
+    function saveReviews() { writeJSON(REVIEWS_KEY, reviews); }
 
     function toast(text) {
         const old = document.querySelector(".db-toast");
@@ -72,73 +86,122 @@
         setTimeout(function () { t.remove(); }, 2600);
     }
 
-    function renderStats() {
-        const alive = orders.filter(function (o) { return o.status !== "cancelled"; });
-        $("st-count").textContent = orders.length;
-        $("st-upcoming").textContent = orders.filter(function (o) { return statusOf(o) === "upcoming"; }).length;
-        $("st-spent").textContent = money(alive.reduce(function (s, o) { return s + o.total; }, 0));
-        $("st-points").textContent = Number(readJSON(POINTS_KEY, 0)) || 0;
-
-        const byType = {};
-        alive.forEach(function (o) {
-            const e = expById(o.id);
-            const label = e && TYPE_LABELS[e.type] ? TYPE_LABELS[e.type] : "Khác";
-            byType[label] = (byType[label] || 0) + o.total;
-        });
-        const rows = Object.keys(byType).sort(function (a, b) { return byType[b] - byType[a]; });
-        const max = rows.length ? byType[rows[0]] : 1;
-        $("spend-bars").innerHTML = rows.length
-            ? rows.map(function (k) {
-                return '<div class="bar-row"><div class="top"><span>' + esc(k) + "</span><b>" + money(byType[k]) +
-                    '</b></div><div class="track"><div class="fill" style="width:' + Math.round(byType[k] / max * 100) + '%"></div></div></div>';
-            }).join("")
-            : '<p class="none">Chưa có chi tiêu nào.</p>';
+    // ---------- Hồ sơ ----------
+    function getProfile() {
+        const p = readJSON(PROFILE_KEY, null);
+        if (p) return p;
+        const c = readJSON(CUSTOMER_KEY, null);
+        if (c) {
+            return {
+                name: ((c.last || "") + " " + (c.first || "")).trim(),
+                email: c.email || "", phone: c.phone || "", city: ""
+            };
+        }
+        return { name: "", email: "", phone: "", city: "" };
     }
 
-    function orderHTML(o) {
+    function tierOf(points) {
+        if (points >= 20) return "Thành viên vàng";
+        if (points >= 5) return "Thành viên bạc";
+        return "Thành viên mới";
+    }
+
+    function renderProfile() {
+        const p = getProfile();
+        const points = Number(readJSON(POINTS_KEY, 0)) || 0;
+        $("pf-name").textContent = p.name || "Khách ChamViet";
+        $("pf-email").textContent = p.email || "Chưa cập nhật e-mail";
+        $("pf-city").textContent = p.city || "Chưa cập nhật";
+        $("pf-tier").textContent = tierOf(points) + (points ? " · " + points + " điểm" : "");
+        $("pf-avatar").src = DEFAULT_AVATAR;
+    }
+
+    // ---------- Tổng quan ----------
+    function renderStats() {
+        const liked = readJSON(LIKED_KEY, []);
+        $("st-count").textContent = orders.length;
+        $("st-liked").textContent = Array.isArray(liked) ? liked.length : 0;
+        if (reviews.length) {
+            const avg = reviews.reduce(function (s, r) { return s + r.rating; }, 0) / reviews.length;
+            $("st-rating").textContent = avg.toFixed(1);
+            $("st-rating-note").textContent = "Đánh giá trung bình (" + reviews.length + " đánh giá)";
+        } else {
+            $("st-rating").textContent = "-";
+            $("st-rating-note").textContent = "Chưa có đánh giá";
+        }
+    }
+
+    function emptyOrders(text) {
+        return '<div class="empty"><i class="fa-regular fa-calendar-xmark"></i><h3>' + esc(text) + "</h3>" +
+            "<p>Hãy khám phá một trải nghiệm, hoặc thêm dữ liệu mẫu để xem thử trang này.</p>" +
+            '<a class="green-btn" href="search.html">Khám phá trải nghiệm</a>' +
+            '<button type="button" class="pill-btn" data-act="seed">Thêm dữ liệu mẫu</button></div>';
+    }
+
+    function orderHTML(o, compact) {
         const st = statusOf(o);
-        const open = openCodes.has(o.code);
+        const open = !compact && openCodes.has(o.code);
         const c = o.customer || {};
-        const canCancel = st === "upcoming";
-        const refundNote = st === "cancelled" && o.refund != null
-            ? "<small>Hoàn " + money(o.refund) + "</small>" : "";
+        const canCancel = !compact && st === "upcoming";
+        const refundLine = st === "cancelled" && o.refund != null ? " · hoàn " + money(o.refund) : "";
 
         return '<article class="order' + (open ? " open" : "") + '" data-code="' + esc(o.code) + '">' +
             '<div class="order-main">' +
                 '<img src="' + esc(o.image || "assets/logo.png") + '" alt="' + esc(o.name) + '" loading="lazy">' +
                 '<div class="order-body">' +
-                    '<div class="order-top"><h3 class="order-name">' + esc(o.name) + "</h3>" +
-                        '<span class="badge ' + st + '">' + STATUS_TEXT[st] + "</span></div>" +
+                    '<h3 class="order-name">' + esc(o.name) + "</h3>" +
                     '<div class="order-meta">' +
-                        '<span><i class="fa-regular fa-calendar"></i>' + esc(o.dateText || isoToVN(o.date)) + "</span>" +
-                        '<span><i class="fa-regular fa-clock"></i>' + esc(o.slot) + "</span>" +
-                        '<span><i class="fa-regular fa-user"></i>Người lớn x' + esc(o.quantity) + "</span>" +
                         '<span><i class="fa-solid fa-location-dot"></i>' + esc(o.location) + "</span>" +
+                        '<span><i class="fa-regular fa-calendar"></i>' + esc(o.dateText || isoToVN(o.date)) + " · " + esc(o.slot) + "</span>" +
+                        '<span><i class="fa-solid fa-user"></i>' + esc(o.quantity) + " người · " + money(o.total) + esc(refundLine) + "</span>" +
                     "</div>" +
-                    '<div class="order-foot">' +
-                        '<div><div class="order-code">Mã: ' + esc(o.code) + "</div>" +
-                        '<div class="order-actions" style="margin-top:8px">' +
-                            '<button type="button" class="db-btn sm" data-act="toggle">' + (open ? "Ẩn chi tiết" : "Chi tiết") + "</button>" +
-                            '<a class="db-btn sm" href="detail.html?id=' + encodeURIComponent(o.id) + '">Xem trải nghiệm</a>' +
-                            (canCancel ? '<button type="button" class="db-btn sm danger" data-act="cancel">Hủy đơn</button>' : "") +
-                        "</div></div>" +
-                        '<div class="order-price">' + money(o.total) + refundNote + "</div>" +
+                    '<div class="order-side">' +
+                        '<span class="badge ' + st + '">' + STATUS_TEXT[st] + "</span>" +
+                        '<div class="order-actions">' +
+                            '<button type="button" class="pill-btn sm" data-act="' + (compact ? "goto" : "toggle") + '">' +
+                                (compact ? "Xem chi tiết" : (open ? "Ẩn chi tiết" : "Xem chi tiết")) + " →</button>" +
+                            (canCancel ? '<button type="button" class="pill-btn sm danger" data-act="cancel">Hủy đơn</button>' : "") +
+                        "</div>" +
                     "</div>" +
                 "</div>" +
             "</div>" +
+            (compact ? "" :
             '<div class="order-detail">' +
-                "<div><span>Người đặt</span>" + esc((c.last || "") + " " + (c.first || "")) + "</div>" +
+                "<div><span>Mã đặt chỗ</span>" + esc(o.code) + "</div>" +
+                "<div><span>Người đặt</span>" + esc(((c.last || "") + " " + (c.first || "")).trim() || "-") + "</div>" +
                 "<div><span>Thanh toán</span>" + esc(o.method) + "</div>" +
-                "<div><span>E-mail</span>" + esc(c.email || "-") + "</div>" +
-                "<div><span>Điện thoại</span>" + esc((c.code || "") + " " + (c.phone || "-")) + "</div>" +
+                "<div><span>Liên hệ</span>" + esc((c.email || "-") + (c.phone ? " · " + (c.code || "") + " " + c.phone : "")) + "</div>" +
                 "<div><span>Tạm tính</span>" + money(o.subtotal != null ? o.subtotal : o.total) + "</div>" +
                 "<div><span>Giảm giá</span>" + (o.discount ? "-" + money(o.discount) + (o.coupon ? " (" + esc(o.coupon) + ")" : "") : "Không") + "</div>" +
                 "<div><span>Điểm Chạm</span>+" + esc(o.points || 0) + "</div>" +
                 "<div><span>Thời gian đặt</span>" + esc(o.createdAt ? new Date(o.createdAt).toLocaleString("vi-VN") : "-") + "</div>" +
-            "</div>" +
+            "</div>") +
         "</article>";
     }
 
+    function sortedOrders() {
+        return orders.slice().sort(function (a, b) {
+            return String(b.createdAt || "").localeCompare(String(a.createdAt || ""));
+        });
+    }
+
+    function renderRecent() {
+        const list = sortedOrders().slice(0, 3);
+        $("recent-orders").innerHTML = list.length
+            ? list.map(function (o) { return orderHTML(o, true); }).join("")
+            : emptyOrders("Bạn chưa có đơn nào");
+
+        const rv = reviews.slice().sort(function (a, b) { return String(b.date).localeCompare(String(a.date)); }).slice(0, 2);
+        $("recent-reviews").innerHTML = rv.length
+            ? rv.map(function (r) {
+                return '<div class="mini-review"><img src="' + esc(r.image || "assets/logo.png") + '" alt="">' +
+                    "<div><h4>" + esc(r.name) + "</h4>" + starsHTML(r.rating) +
+                    "<p>\"" + esc(r.text || "Không có nhận xét") + "\"</p><small>" + esc(dateVN(r.date)) + "</small></div></div>";
+            }).join("")
+            : '<p class="none">Bạn chưa viết đánh giá nào.</p>';
+    }
+
+    // ---------- Tab Đơn đặt chỗ ----------
     function renderTabs() {
         document.querySelectorAll("#db-tabs .tab").forEach(function (btn) {
             const f = btn.dataset.filter;
@@ -150,41 +213,128 @@
     }
 
     function renderOrders() {
-        const list = orders.filter(function (o) { return filter === "all" || statusOf(o) === filter; });
-        const el = $("order-list");
-        if (!list.length) {
-            el.innerHTML = '<div class="empty"><i class="fa-regular fa-calendar-xmark"></i>' +
-                "<h3>" + (orders.length ? "Không có đơn nào ở mục này" : "Bạn chưa có đơn nào") + "</h3>" +
-                "<p>Hãy khám phá một trải nghiệm, hoặc thêm đơn mẫu để xem thử trang này.</p>" +
-                '<a class="db-btn solid" href="search.html">Khám phá trải nghiệm</a>' +
-                '<button type="button" class="db-btn" data-act="seed">Thêm đơn mẫu</button></div>';
+        const list = sortedOrders().filter(function (o) { return filter === "all" || statusOf(o) === filter; });
+        $("order-list").innerHTML = list.length
+            ? list.map(function (o) { return orderHTML(o, false); }).join("")
+            : emptyOrders(orders.length ? "Không có đơn nào ở mục này" : "Bạn chưa có đơn nào");
+    }
+
+    // ---------- Tab Đánh giá ----------
+    function renderReviews() {
+        const reviewed = new Set(reviews.map(function (r) { return r.code; }));
+        const pending = sortedOrders().filter(function (o) { return statusOf(o) === "done" && !reviewed.has(o.code); });
+
+        $("pending-reviews").innerHTML = pending.map(function (o) {
+            return '<div class="pending-card" data-code="' + esc(o.code) + '" data-rating="0">' +
+                '<div class="pending-head"><b>Chờ đánh giá: ' + esc(o.name) + "</b>" +
+                '<button type="button" class="pill-btn sm" data-act="rate-open">Viết đánh giá</button></div>' +
+                '<div class="rate-form">' +
+                    '<div class="star-pick">' + [1, 2, 3, 4, 5].map(function (i) {
+                        return '<button type="button" data-star="' + i + '" aria-label="' + i + ' sao"><i class="fa-solid fa-star"></i></button>';
+                    }).join("") + "</div>" +
+                    '<textarea placeholder="Chia sẻ cảm nhận của bạn về trải nghiệm..." maxlength="300"></textarea>' +
+                    '<button type="button" class="green-btn" data-act="rate-send">Gửi đánh giá</button>' +
+                "</div></div>";
+        }).join("");
+
+        $("my-reviews").innerHTML = reviews.length
+            ? reviews.slice().sort(function (a, b) { return String(b.date).localeCompare(String(a.date)); }).map(function (r) {
+                return '<article class="review-card"><img src="' + esc(r.image || "assets/logo.png") + '" alt="">' +
+                    "<div><h4>" + esc(r.name) + "</h4>" + starsHTML(r.rating) +
+                    "<p>" + esc(r.text || "Không có nhận xét") + "</p><small>" + esc(dateVN(r.date)) + "</small></div></article>";
+            }).join("")
+            : (pending.length ? "" : '<div class="empty"><i class="fa-regular fa-star"></i><h3>Chưa có đánh giá nào</h3>' +
+                "<p>Sau khi hoàn thành một trải nghiệm, bạn có thể đánh giá tại đây.</p></div>");
+    }
+
+    // ---------- Tab Yêu thích ----------
+    function renderFavorites() {
+        const liked = readJSON(LIKED_KEY, []);
+        const items = (typeof experiences !== "undefined" ? experiences : []).filter(function (e) {
+            return Array.isArray(liked) && liked.indexOf(e.id) !== -1;
+        });
+        $("fav-grid").innerHTML = items.length
+            ? items.map(function (e) {
+                return '<article class="fav-card"><img src="' + esc(e.image || "assets/logo.png") + '" alt="' + esc(e.name) + '" loading="lazy">' +
+                    "<div><h4>" + esc(e.name) + "</h4><small>" + esc(e.location) + " · " + money(e.price) + "/người</small>" +
+                    '<a class="pill-btn sm" href="detail.html?id=' + encodeURIComponent(e.id) + '">Xem chi tiết →</a></div></article>';
+            }).join("")
+            : '<div class="empty" style="grid-column:1/-1"><i class="fa-regular fa-heart"></i><h3>Chưa có trải nghiệm yêu thích</h3>' +
+                '<p>Bấm biểu tượng trái tim trên thẻ trải nghiệm để lưu vào đây.</p><a class="green-btn" href="search.html">Khám phá trải nghiệm</a></div>';
+    }
+
+    // ---------- Tab Thông tin cá nhân ----------
+    function fillProfileForm() {
+        const p = getProfile();
+        $("p-name").value = p.name || "";
+        $("p-city").value = p.city || "";
+        $("p-email").value = p.email || "";
+        $("p-phone").value = p.phone || "";
+    }
+
+    $("profile-form").addEventListener("submit", function (e) {
+        e.preventDefault();
+        const email = $("p-email").value.trim();
+        const err = $("p-email-err");
+        if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
+            err.textContent = "E-mail chưa đúng định dạng";
             return;
         }
-        el.innerHTML = list.map(orderHTML).join("");
+        err.textContent = "";
+        writeJSON(PROFILE_KEY, {
+            name: $("p-name").value.trim(),
+            city: $("p-city").value.trim(),
+            email: email,
+            phone: $("p-phone").value.replace(/[\s.\-]/g, "")
+        });
+        renderProfile();
+        toast("Đã lưu thông tin cá nhân");
+    });
+
+    // ---------- Chuyển tab theo #hash ----------
+    function currentView() {
+        const h = window.location.hash.replace("#", "");
+        return VIEWS.indexOf(h) !== -1 ? h : "overview";
     }
+
+    function showView() {
+        const v = currentView();
+        VIEWS.forEach(function (name) { $("view-" + name).hidden = name !== v; });
+        document.querySelectorAll("#db-menu .menu-item").forEach(function (a) {
+            a.classList.toggle("active", a.dataset.view === (v === "favorites" ? "overview" : v));
+        });
+        if (v === "profile") fillProfileForm();
+        window.scrollTo({ top: 0 });
+    }
+    window.addEventListener("hashchange", showView);
 
     function renderAll() {
+        renderProfile();
         renderStats();
+        renderRecent();
         renderTabs();
         renderOrders();
+        renderReviews();
+        renderFavorites();
     }
 
+    // ---------- Hành động ----------
     $("db-tabs").addEventListener("click", function (e) {
         const tab = e.target.closest(".tab");
         if (!tab) return;
         filter = tab.dataset.filter;
-        renderAll();
+        renderTabs();
+        renderOrders();
     });
 
     function cancelOrder(o) {
         const pct = refundPercent(o);
         const refund = Math.round(o.total * pct / 100);
-        const msg = "Hủy đơn " + o.code + "?\nTheo chính sách, bạn được hoàn " + pct + "% (" + money(refund) + ").";
-        if (!window.confirm(msg)) return;
+        if (!window.confirm("Hủy đơn " + o.code + "?\nTheo chính sách, bạn được hoàn " + pct + "% (" + money(refund) + ").")) return;
 
         o.status = "cancelled";
         o.refund = refund;
-        save();
+        saveOrders();
 
         const booked = readJSON(BOOKED_KEY, {});
         const key = o.id + "|" + o.date + "|" + o.slotIndex;
@@ -193,69 +343,113 @@
             if (!booked[key]) delete booked[key];
             writeJSON(BOOKED_KEY, booked);
         }
-
-        const pts = Math.max(0, (Number(readJSON(POINTS_KEY, 0)) || 0) - (o.points || 0));
-        writeJSON(POINTS_KEY, pts);
+        writeJSON(POINTS_KEY, Math.max(0, (Number(readJSON(POINTS_KEY, 0)) || 0) - (o.points || 0)));
 
         toast("Đã hủy đơn " + o.code + ", hoàn " + pct + "%");
         renderAll();
     }
 
-    function handleClick(e) {
+    function onClick(e) {
         const btn = e.target.closest("[data-act]");
         if (!btn) return;
         const act = btn.dataset.act;
         if (act === "seed") { seed(); return; }
 
         const card = btn.closest(".order");
-        if (!card) return;
-        const o = orders.find(function (x) { return x.code === card.dataset.code; });
-        if (!o) return;
+        if (card) {
+            const o = orders.find(function (x) { return x.code === card.dataset.code; });
+            if (!o) return;
+            if (act === "toggle") {
+                if (openCodes.has(o.code)) openCodes.delete(o.code); else openCodes.add(o.code);
+                renderOrders();
+            } else if (act === "goto") {
+                openCodes.add(o.code);
+                filter = "all";
+                renderTabs();
+                renderOrders();
+                window.location.hash = "#orders";
+                showView();
+            } else if (act === "cancel") {
+                cancelOrder(o);
+            }
+            return;
+        }
 
-        if (act === "toggle") {
-            if (openCodes.has(o.code)) openCodes.delete(o.code); else openCodes.add(o.code);
-            renderOrders();
-        } else if (act === "cancel") {
-            cancelOrder(o);
+        const pend = btn.closest(".pending-card");
+        if (!pend) return;
+        if (act === "rate-open") {
+            pend.classList.toggle("open");
+        } else if (act === "rate-send") {
+            const rating = Number(pend.dataset.rating) || 0;
+            if (!rating) { toast("Vui lòng chọn số sao"); return; }
+            const o = orders.find(function (x) { return x.code === pend.dataset.code; });
+            if (!o) return;
+            reviews.push({
+                code: o.code, id: o.id, name: o.name, image: o.image, rating: rating,
+                text: pend.querySelector("textarea").value.trim(), date: new Date().toISOString()
+            });
+            saveReviews();
+            toast("Cảm ơn bạn đã đánh giá!");
+            renderAll();
         }
     }
-    $("order-list").addEventListener("click", handleClick);
+    document.querySelector(".db-page").addEventListener("click", onClick);
 
+    // chọn sao
+    $("pending-reviews").addEventListener("click", function (e) {
+        const star = e.target.closest("[data-star]");
+        if (!star) return;
+        const card = star.closest(".pending-card");
+        card.dataset.rating = star.dataset.star;
+        card.querySelectorAll("[data-star]").forEach(function (b) {
+            b.classList.toggle("on", Number(b.dataset.star) <= Number(star.dataset.star));
+        });
+    });
+
+    // ---------- Dữ liệu mẫu / xóa ----------
     function seed() {
         if (typeof experiences === "undefined" || !experiences.length) {
             toast("Không tìm thấy dữ liệu trải nghiệm (data.js)");
             return;
         }
-        const offsets = [-12, 5, 18];
-        const sample = [];
-        offsets.forEach(function (off, i) {
+        const offsets = [-12, 5, -40];
+        const sample = offsets.map(function (off, i) {
             const e = experiences[i % experiences.length];
             const d = new Date(); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() + off);
             const iso = toISO(d);
             const qty = i + 1;
             const total = e.price * qty;
-            sample.push({
+            return {
                 code: "CV" + Math.random().toString(36).slice(2, 8).toUpperCase(),
                 id: e.id, name: e.name, image: e.image, location: e.location, duration: e.duration,
                 date: iso, dateText: isoToVN(iso), slotIndex: 0, slot: "8:00 - 11:00",
                 quantity: qty, price: e.price, subtotal: total, discount: 0, coupon: null, total: total,
                 points: Math.floor(total / 100000), method: "VietQR",
-                customer: { last: "Nguyễn", first: "An", country: "Việt Nam", email: "demo@chamviet.vn", code: "+84", phone: "901234567" },
+                customer: { last: "Phạm Thị", first: "Thương", country: "Việt Nam", email: "demo@chamviet.vn", code: "+84", phone: "901234567" },
                 status: "confirmed",
-                createdAt: new Date(Date.now() - (i + 1) * 86400000).toISOString()
-            });
+                createdAt: new Date(Date.now() - (i + 1) * 86400000 * 3).toISOString()
+            };
         });
         orders = sample.concat(orders);
-        save();
-        toast("Đã thêm " + sample.length + " đơn mẫu");
+        saveOrders();
+
+        const done = sample[0];
+        reviews.push({
+            code: done.code, id: done.id, name: done.name, image: done.image, rating: 5,
+            text: "Trải nghiệm thú vị, nghệ nhân hướng dẫn nhiệt tình, không gian làng nghề rất đẹp.",
+            date: new Date(Date.now() - 86400000 * 2).toISOString()
+        });
+        saveReviews();
+
+        toast("Đã thêm dữ liệu mẫu");
         renderAll();
     }
     $("seed-btn").addEventListener("click", seed);
 
     $("reset-btn").addEventListener("click", function () {
-        if (!window.confirm("Xóa toàn bộ đơn đặt, điểm Chạm và dữ liệu đặt chỗ demo trong trình duyệt này?")) return;
-        [ORDERS_KEY, BOOKED_KEY, POINTS_KEY, "chamviet_booking", "chamviet_customer"].forEach(removeKey);
-        orders = [];
+        if (!window.confirm("Xóa toàn bộ đơn, đánh giá, điểm Chạm và thông tin đã lưu trong trình duyệt này?")) return;
+        [ORDERS_KEY, BOOKED_KEY, POINTS_KEY, CUSTOMER_KEY, REVIEWS_KEY, PROFILE_KEY, "chamviet_booking"].forEach(removeKey);
+        orders = []; reviews = [];
         openCodes.clear();
         filter = "all";
         toast("Đã xóa dữ liệu demo");
@@ -263,4 +457,5 @@
     });
 
     renderAll();
+    showView();
 })();

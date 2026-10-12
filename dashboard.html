@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đơn của tôi - ChamViet</title>
+    <title>Trang cá nhân - ChamViet</title>
 
     <link rel="stylesheet" href="css/layout.css">
     <link rel="stylesheet" href="css/pages/dashboard.css">
@@ -13,52 +13,162 @@
     <div id="site-header"></div>
 
     <main class="db-page">
-        <div class="db-title">
-            <div>
-                <h1>Đơn của tôi</h1>
-                <p>Theo dõi các trải nghiệm bạn đã đặt tại ChamViet</p>
-            </div>
-            <div class="db-tools">
-                <button type="button" class="db-btn ghost" id="seed-btn"><i class="fa-solid fa-wand-magic-sparkles"></i> Thêm đơn mẫu</button>
-                <button type="button" class="db-btn ghost danger" id="reset-btn"><i class="fa-regular fa-trash-can"></i> Xóa dữ liệu demo</button>
-            </div>
-        </div>
 
-        <!-- Thống kê -->
-        <section class="db-stats" id="db-stats">
-            <div class="stat"><i class="fa-solid fa-ticket"></i><div><small>Tổng số đơn</small><strong id="st-count">0</strong></div></div>
-            <div class="stat"><i class="fa-regular fa-calendar-check"></i><div><small>Sắp diễn ra</small><strong id="st-upcoming">0</strong></div></div>
-            <div class="stat"><i class="fa-solid fa-wallet"></i><div><small>Tổng chi tiêu</small><strong id="st-spent">0đ</strong></div></div>
-            <div class="stat"><i class="fa-solid fa-coins"></i><div><small>Điểm Chạm</small><strong id="st-points">0</strong></div></div>
+        <!-- Ảnh bìa + thẻ hồ sơ -->
+        <section class="db-cover">
+            <img class="cover-img" src="assets/banner2.jpg" alt="">
+            <div class="profile-card">
+                <img class="avatar" id="pf-avatar" src="assets/avatar.webp" alt="Ảnh đại diện">
+                <div class="pf-info">
+                    <div class="pf-name-row">
+                        <h1 id="pf-name">Khách ChamViet</h1>
+                        <span class="tier" id="pf-tier">Thành viên mới</span>
+                    </div>
+                    <p class="pf-email" id="pf-email"></p>
+                    <p class="pf-city"><i class="fa-solid fa-location-dot"></i> <span id="pf-city">Chưa cập nhật</span></p>
+                    <a class="pill-btn" href="#profile">Chỉnh sửa thông tin</a>
+                </div>
+            </div>
         </section>
 
-        <div class="db-layout">
-            <section class="db-orders">
-                <div class="db-tabs" id="db-tabs" role="tablist">
-                    <button type="button" class="tab active" data-filter="all">Tất cả</button>
-                    <button type="button" class="tab" data-filter="upcoming">Sắp diễn ra</button>
-                    <button type="button" class="tab" data-filter="done">Đã hoàn thành</button>
-                    <button type="button" class="tab" data-filter="cancelled">Đã hủy</button>
-                </div>
+        <div class="db-shell">
 
-                <div class="order-list" id="order-list"></div>
-            </section>
+            <!-- Menu bên trái -->
+            <nav class="db-menu" id="db-menu" aria-label="Menu tài khoản">
+                <a href="#overview" class="menu-item" data-view="overview"><i class="fa-solid fa-house"></i><span>Trang cá nhân</span></a>
+                <a href="#orders" class="menu-item" data-view="orders"><i class="fa-regular fa-calendar-days"></i><span>Đơn đặt chỗ</span></a>
+                <a href="#reviews" class="menu-item" data-view="reviews"><i class="fa-regular fa-star"></i><span>Đánh giá của tôi</span></a>
+                <a href="#profile" class="menu-item" data-view="profile"><i class="fa-solid fa-user"></i><span>Thông tin cá nhân</span></a>
+                <a href="#settings" class="menu-item" data-view="settings"><i class="fa-solid fa-gear"></i><span>Cài đặt</span></a>
+                <p class="menu-quote">Kết nối bạn với những giá trị bản địa Việt Nam</p>
+            </nav>
 
-            <aside class="db-side">
-                <div class="side-card">
-                    <h2>Chi tiêu theo loại</h2>
-                    <div id="spend-bars"></div>
-                </div>
-                <div class="side-card">
-                    <h2>Chính sách hủy</h2>
-                    <ul class="policy">
-                        <li>Trước 3 ngày: hoàn 100%</li>
-                        <li>Trước 2 ngày: hoàn 50%</li>
-                        <li>Trước 1 ngày: hoàn 25%</li>
-                        <li>Trong ngày: không hoàn tiền</li>
-                    </ul>
-                </div>
-            </aside>
+            <div class="db-content">
+
+                <!-- ===== TỔNG QUAN ===== -->
+                <section class="view" id="view-overview">
+                    <div class="top-row">
+                        <div class="stats">
+                            <a class="stat" href="#orders">
+                                <i class="fa-regular fa-calendar-days"></i>
+                                <strong id="st-count">0</strong>
+                                <small>Đơn đặt chỗ</small>
+                                <span class="more">Xem tất cả <i class="fa-solid fa-arrow-right"></i></span>
+                            </a>
+                            <a class="stat" href="#favorites">
+                                <i class="fa-solid fa-heart heart"></i>
+                                <strong id="st-liked">0</strong>
+                                <small>Trải nghiệm yêu thích</small>
+                                <span class="more">Xem danh sách <i class="fa-solid fa-arrow-right"></i></span>
+                            </a>
+                            <a class="stat" href="#reviews">
+                                <i class="fa-regular fa-star"></i>
+                                <strong id="st-rating">-</strong>
+                                <small id="st-rating-note">Đánh giá trung bình</small>
+                                <span class="more">Xem tất cả <i class="fa-solid fa-arrow-right"></i></span>
+                            </a>
+                        </div>
+                        <aside class="promo">
+                            <div>
+                                <p class="promo-title">Khám phá thêm những trải nghiệm mới</p>
+                                <small>Hành trình tiếp theo đang chờ bạn</small>
+                                <a class="green-btn" href="search.html">Khám phá ngay <i class="fa-solid fa-arrow-right"></i></a>
+                            </div>
+                            <i class="fa-solid fa-house-chimney-window promo-icon"></i>
+                        </aside>
+                    </div>
+
+                    <div class="two-col">
+                        <div>
+                            <div class="sec-head">
+                                <h2>Đơn đặt chỗ gần đây</h2>
+                                <a href="#orders">Xem tất cả đơn đặt chỗ <i class="fa-solid fa-arrow-right"></i></a>
+                            </div>
+                            <div class="order-list" id="recent-orders"></div>
+                        </div>
+
+                        <div class="side-col">
+                            <div class="panel">
+                                <h2>Đánh giá gần đây</h2>
+                                <div id="recent-reviews"></div>
+                            </div>
+                            <aside class="support">
+                                <i class="fa-solid fa-headset"></i>
+                                <div>
+                                    <h3>Bạn cần hỗ trợ?</h3>
+                                    <small>Đội ngũ ChamViet luôn sẵn sàng hỗ trợ bạn.</small>
+                                    <a href="mailto:hotro@chamviet.vn">Liên hệ ngay <i class="fa-solid fa-arrow-right"></i></a>
+                                </div>
+                            </aside>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ===== ĐƠN ĐẶT CHỖ ===== -->
+                <section class="view" id="view-orders" hidden>
+                    <div class="sec-head"><h2>Đơn đặt chỗ</h2></div>
+                    <div class="tabs" id="db-tabs">
+                        <button type="button" class="tab active" data-filter="all">Tất cả</button>
+                        <button type="button" class="tab" data-filter="upcoming">Sắp diễn ra</button>
+                        <button type="button" class="tab" data-filter="done">Đã hoàn thành</button>
+                        <button type="button" class="tab" data-filter="cancelled">Đã hủy</button>
+                    </div>
+                    <div class="order-list" id="order-list"></div>
+                    <div class="panel policy-panel">
+                        <h2>Chính sách hủy</h2>
+                        <ul class="policy">
+                            <li>Hủy trước 3 ngày: hoàn tiền 100%</li>
+                            <li>Hủy trước 2 ngày: hoàn tiền 50%</li>
+                            <li>Hủy trước 1 ngày: hoàn tiền 25%</li>
+                            <li>Hủy trong ngày: không hoàn tiền</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- ===== ĐÁNH GIÁ ===== -->
+                <section class="view" id="view-reviews" hidden>
+                    <div class="sec-head"><h2>Đánh giá của tôi</h2></div>
+                    <div id="pending-reviews"></div>
+                    <div class="review-list" id="my-reviews"></div>
+                </section>
+
+                <!-- ===== YÊU THÍCH ===== -->
+                <section class="view" id="view-favorites" hidden>
+                    <div class="sec-head"><h2>Trải nghiệm yêu thích</h2></div>
+                    <div class="fav-grid" id="fav-grid"></div>
+                </section>
+
+                <!-- ===== THÔNG TIN CÁ NHÂN ===== -->
+                <section class="view" id="view-profile" hidden>
+                    <div class="sec-head"><h2>Thông tin cá nhân</h2></div>
+                    <form class="panel profile-form" id="profile-form" novalidate>
+                        <div class="form-grid">
+                            <div class="field"><label for="p-name">Họ và tên</label><input id="p-name" type="text" autocomplete="name"></div>
+                            <div class="field"><label for="p-city">Nơi sống</label><input id="p-city" type="text" placeholder="Ví dụ: Hà Nội"></div>
+                            <div class="field"><label for="p-email">E-mail</label><input id="p-email" type="email" autocomplete="email"><small class="err" id="p-email-err"></small></div>
+                            <div class="field"><label for="p-phone">Số điện thoại</label><input id="p-phone" type="tel" inputmode="numeric"></div>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="green-btn">Lưu thay đổi</button>
+                        </div>
+                    </form>
+                </section>
+
+                <!-- ===== CÀI ĐẶT ===== -->
+                <section class="view" id="view-settings" hidden>
+                    <div class="sec-head"><h2>Cài đặt</h2></div>
+                    <div class="panel settings">
+                        <div class="setting-row">
+                            <div><h3>Thêm dữ liệu mẫu</h3><small>Tạo vài đơn đặt chỗ và đánh giá mẫu để xem thử giao diện.</small></div>
+                            <button type="button" class="pill-btn" id="seed-btn"><i class="fa-solid fa-wand-magic-sparkles"></i> Thêm dữ liệu mẫu</button>
+                        </div>
+                        <div class="setting-row">
+                            <div><h3>Xóa dữ liệu demo</h3><small>Xóa toàn bộ đơn, đánh giá, điểm Chạm và thông tin đã lưu trong trình duyệt này.</small></div>
+                            <button type="button" class="pill-btn danger" id="reset-btn"><i class="fa-regular fa-trash-can"></i> Xóa dữ liệu</button>
+                        </div>
+                    </div>
+                </section>
+            </div>
         </div>
     </main>
 
