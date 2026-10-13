@@ -23,7 +23,7 @@
                     <p>Khám phá những hoạt động thú vị, gần gũi và đậm chất địa phương</p>
                 </div>
                 <form class="hero-search" id="hero-search" role="search">
-                    <input type="search" id="keyword" placeholder="Bạn muốn trải nghiệm gì?" autocomplete="off">
+                    <input type="search" id="keyword" autocomplete="off">
                     <button type="submit" aria-label="Tìm kiếm">
                         <i class="fa-solid fa-magnifying-glass"></i>
                     </button>
@@ -142,8 +142,34 @@
             yoyo: true
         });
 
+        gsap.from('.search-hero-text', {
+            x: -50,
+            opacity: 0,
+            duration: 1
+        });
+
+        gsap.from('.hero-search', {
+            x: 50,
+            opacity: 0,
+            duration: 1
+        });
+
+        gsap.from('.chip', {
+            y: -30,
+            opacity: 0,
+            duration: 1,
+            stagger: 0.1
+        });
+
+        gsap.from('.filter-group', {
+            x: -50,
+            opacity: 0,
+            duration: 1,
+            stagger: 0.2
+        });
+
         gsap.from('.box-item', {
-            y: 30,
+            y: 50,
             opacity: 0,
             duration: 0.5,
             stagger: 0.1

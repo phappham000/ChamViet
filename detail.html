@@ -132,6 +132,32 @@
             repeat: -1,
             yoyo: true
         });
+
+        gsap.from('.detail-info', {
+            x: -50,
+            opacity: 0,
+            duration: 1
+        });
+
+        gsap.from('.booking-card', {
+            x: 50,
+            opacity: 0,
+            duration: 1
+        });
+
+        gsap.from('.review-card', {
+            y: 50,
+            opacity: 0,
+            duration: 1,
+            stagger: 0.1
+        });
+
+        gsap.from('.box-item', {
+            y: 50,
+            opacity: 0,
+            duration: 0.5,
+            stagger: 0.1
+        });
     </script>
 </body>
 </html>

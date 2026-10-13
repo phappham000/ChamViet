@@ -698,10 +698,7 @@ body .list-box .box-item {
         linear-gradient(180deg, rgba(255, 255, 255, 0.10) 0%, rgba(255, 255, 255, 0) 55%),
         linear-gradient(110deg, #0b2e1a 0%, #14532d 45%, #1f6b3a 75%, #0f3d22 100%);
     color: #f3ead2;
-    border-bottom: 1px solid rgba(212, 175, 55, 0.45);
     box-shadow: 0 6px 20px rgba(8, 40, 22, 0.35);
-
-    transition: .3s ease-in-out;
 }
 
 body .list-box .box-item:hover {
